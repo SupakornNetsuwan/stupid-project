@@ -15,8 +15,8 @@ const MenuList: Menu[] = [
 
 export default component$(() => {
   return (
-    <div class="w-full flex justify-center pt-10">
-      <ul class="flex space-x-10 bg-black/80 rounded-lg max-w-[60%] w-full py-5 px-10">
+    <div class="w-full flex justify-center sticky top-4 left-0">
+      <ul class="flex space-x-10 bg-black/80 rounded-lg  w-full py-5 px-10">
         {MenuList.map((item: Menu, key) => (
           <p
             class="text-white font-medium hover:underline hover:underline-offset-2 hover:text-[#fe5a99] cursor-progress select-none"

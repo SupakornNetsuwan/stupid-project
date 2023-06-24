@@ -1,14 +1,12 @@
 import { component$ } from "@builder.io/qwik";
 import { Slot } from "@builder.io/qwik";
-import Nav from "../shared/nav";
+import Nav from "../components/shared/nav";
 
 export default component$(() => {
   return (
-    <section>
+    <section class="mx-auto justify-between max-w-7xl w-full md:max-w-[60vw] py-12">
       <Nav />
-      <div class="mx-auto justify-between max-w-7xl w-full">
-        <Slot />
-      </div>
+      <Slot />
     </section>
   );
 });
