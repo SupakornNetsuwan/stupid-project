@@ -6,6 +6,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: '#fe5a99'
+      },
       lineClamp: {
         10: '10',
         11: '11',

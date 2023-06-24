@@ -16,24 +16,40 @@ export default component$(() => {
   const title = useSignal("");
   const description = useSignal("");
   const date = useSignal(new Date());
+  const trashMemo = useSignal<Memo[]>([]);
 
   const addMemo = $(() => {
-    memoList.value.push({
-      id: memoList.value.length + 1,
-      title: title.value,
-      description: description.value,
-      date: date.value || new Date(),
-    });
+    memoList.value = [
+      ...memoList.value,
+      {
+        id: memoList.value.length + 1,
+        title: title.value,
+        description: description.value,
+        date: date.value || new Date(),
+      },
+    ];
 
-    localStorage.setItem("sht-memo", JSON.stringify(memoList));
+    localStorage.setItem("sht-memo", JSON.stringify(memoList.value));
   });
+
+  const random = $(async (chance : number) => {
+    return Math.random() * 100 < chance;
+  })
 
   useTask$(({ track }) => {
     track(memoList);
   });
 
   useVisibleTask$(() => {
-    memoList.value = JSON.parse(localStorage.getItem("sht-memo")!);
+    memoList.value = JSON.parse(localStorage.getItem("sht-memo") || "[]");
+
+    // Randomly delete memo 
+    memoList.value.forEach(async (memo, index) => {
+      if (await random(25)) {
+        trashMemo.value = [...trashMemo.value, memo];
+        memoList.value = memoList.value.filter((_, i) => i !== index);
+      }
+    })
   });
 
   return (
@@ -75,7 +91,7 @@ export default component$(() => {
                 name="date"
                 id="date"
                 onChange$={(e, el) => (date.value = new Date(el.value))}
-                class="p-2"
+                class="p-2 border-b w-full"
               />
               <div class="flex justify-end space-x-2">
                 <button
@@ -85,7 +101,7 @@ export default component$(() => {
                   ปิด
                 </button>
                 <button
-                  class="py-2 px-4 rounded shadow border-[#fe5a99] text-[#fe5a99] border hover:bg-[#fe5a99] hover:text-white transition"
+                  class="py-2 px-4 rounded shadow border-primary text-primary border hover:bg-primary hover:text-white transition"
                   onClick$={addMemo}
                 >
                   ยืนยัน
@@ -97,7 +113,7 @@ export default component$(() => {
       </div>
       <div class="pt-8">
         <p class="py-2 text-gray-500">รายการที่บันทึกไว้</p>
-        {memoList.value ? (
+        {memoList.value && memoList.value.length != 0 ? (
           <div class="flex flex-col gap-2">
             {memoList.value.map((memo, index) => {
               return (
