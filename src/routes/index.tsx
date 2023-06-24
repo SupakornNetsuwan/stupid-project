@@ -32,24 +32,42 @@ export default component$(() => {
     localStorage.setItem("sht-memo", JSON.stringify(memoList.value));
   });
 
-  const random = $(async (chance : number) => {
+  const random = $(async (chance: number) => {
     return Math.random() * 100 < chance;
-  })
+  });
+
+  const randomDeleteMemo = $(async () => {
+    for (const [index, memo] of memoList.value.entries()) {
+      if (await random(35)) {
+        trashMemo.value = [...trashMemo.value, memo];
+      }
+    }
+    memoList.value = memoList.value.filter((memo, index) => {
+      return !trashMemo.value.some((trashMemo) => trashMemo.id === memo.id);
+    });
+  });
 
   useTask$(({ track }) => {
     track(memoList);
+    track(trashMemo)
   });
 
-  useVisibleTask$(() => {
+  useVisibleTask$(async() => {
     memoList.value = JSON.parse(localStorage.getItem("sht-memo") || "[]");
+    await randomDeleteMemo();
+    console.log(trashMemo.value)
 
-    // Randomly delete memo 
-    memoList.value.forEach(async (memo, index) => {
-      if (await random(25)) {
-        trashMemo.value = [...trashMemo.value, memo];
-        memoList.value = memoList.value.filter((_, i) => i !== index);
+    // Randomly add memo from trash
+    trashMemo.value.forEach(async (memo, index) => {
+      console.log("random add memo from trash", index)
+      if (await random(100)) {
+        console.log("add memo from trash");
+        setTimeout(() => {
+          memoList.value = [...memoList.value, memo];
+          trashMemo.value = trashMemo.value.filter((_, i) => i !== index);
+        }, 1000 * (Math.random() * 5));
       }
-    })
+    });
   });
 
   return (
