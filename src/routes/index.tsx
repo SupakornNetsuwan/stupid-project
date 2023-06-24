@@ -1,4 +1,4 @@
-import { component$, useSignal, $, useTask$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import Rootlayout from "~/core/layout/rootlayout";
 import Hero from "~/core/components/shared/hero";
@@ -34,6 +34,7 @@ export default component$(() => {
   });
 
   const randomDeleteMemo = $(async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [index, memo] of memoList.value.entries()) {
       if (await random(35)) {
         trashMemo.value = [...trashMemo.value, memo];
@@ -51,6 +52,17 @@ export default component$(() => {
     localStorage.setItem("sht-memo", JSON.stringify(memoList.value));
   });
 
+  const randomDateMemo = $(async () => {
+    const data = memoList.value.map((v: Memo) => {
+      return {
+        ...v,
+        date: new Date(+new Date() - Math.floor(Math.random() * 1e12)),
+      };
+    });
+
+    memoList.value = data;
+  });
+
   // useTask$(({ track }) => {
   //   track(memoList);
   //   track(trashMemo);
@@ -59,7 +71,7 @@ export default component$(() => {
   useVisibleTask$(async () => {
     memoList.value = JSON.parse(localStorage.getItem("sht-memo") || "[]");
     await randomDeleteMemo();
-    console.log(trashMemo.value);
+    await randomDateMemo();
 
     // Randomly add memo from trash
     trashMemo.value.forEach(async (memo, index) => {
@@ -152,7 +164,9 @@ export default component$(() => {
             })}
           </div>
         ) : (
-          <p class="text-center py-12 bg-primary/5 rounded-md text-primary">ยังไม่มีรายการ</p>
+          <p class="text-center py-12 bg-primary/5 rounded-md text-primary">
+            ยังไม่มีรายการ
+          </p>
         )}
       </div>
     </Rootlayout>
