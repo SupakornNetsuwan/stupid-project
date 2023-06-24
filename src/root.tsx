@@ -1,8 +1,21 @@
-import { component$ } from '@builder.io/qwik';
-import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
-import { RouterHead } from './core/components/router-head/router-head';
+import { component$ } from "@builder.io/qwik";
+import {
+  QwikCityProvider,
+  RouterOutlet,
+  ServiceWorkerRegister,
+} from "@builder.io/qwik-city";
+import { RouterHead } from "./core/components/router-head/router-head";
 
-import './global.css';
+import "./global.css";
+import "@fontsource/noto-sans-thai-looped/100.css";
+import "@fontsource/noto-sans-thai-looped/200.css";
+import "@fontsource/noto-sans-thai-looped/300.css";
+import "@fontsource/noto-sans-thai-looped/400.css";
+import "@fontsource/noto-sans-thai-looped/500.css";
+import "@fontsource/noto-sans-thai-looped/600.css";
+import "@fontsource/noto-sans-thai-looped/700.css";
+import "@fontsource/noto-sans-thai-looped/800.css";
+import "@fontsource/noto-sans-thai-looped/900.css";
 
 export default component$(() => {
   /**
