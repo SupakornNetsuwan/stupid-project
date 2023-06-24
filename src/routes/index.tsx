@@ -1,9 +1,4 @@
-import {
-  component$,
-  useSignal,
-  $,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import Rootlayout from "~/core/layout/rootlayout";
 import Hero from "~/core/components/shared/hero";
@@ -30,11 +25,10 @@ export default component$(() => {
     {
       title: "กินข้าว",
       description: "กับหมา",
-    }
+    },
   ];
-  const addMemo = $(() => {
-    console.log(new Date().getTime());
 
+  const addMemo = $(() => {
     memoList.value = [
       {
         id: new Date().getTime(),
@@ -46,6 +40,7 @@ export default component$(() => {
     ];
 
     localStorage.setItem("sht-memo", JSON.stringify(memoList.value));
+    addMode.value = false;
   });
 
   const random = $(async (chance: number) => {
@@ -65,6 +60,7 @@ export default component$(() => {
   });
 
   const randomAddMemoFromTrash = $(async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [index, memo] of trashMemo.value.entries()) {
       if (await random(65)) {
         console.log("add memo from trash");
@@ -80,6 +76,7 @@ export default component$(() => {
     memoList.value = memoList.value.filter((checkingMemo) => {
       return checkingMemo.id !== memo.id;
     });
+
     localStorage.setItem("sht-memo", JSON.stringify(memoList.value));
   });
 
@@ -98,7 +95,8 @@ export default component$(() => {
   const replaceMemo = $(async () => {
     for (const [index, memo] of memoList.value.entries()) {
       if (await random(10)) {
-        const randomMemoItem = randomMemo[Math.floor(Math.random() * randomMemo.length)]
+        const randomMemoItem =
+          randomMemo[Math.floor(Math.random() * randomMemo.length)];
         memoList.value[index] = {
           ...memo,
           title: randomMemoItem.title,
@@ -106,7 +104,7 @@ export default component$(() => {
         };
       }
     }
-  })
+  });
   useVisibleTask$(async () => {
     memoList.value = JSON.parse(localStorage.getItem("sht-memo") || "[]");
     await replaceMemo();
