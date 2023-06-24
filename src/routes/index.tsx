@@ -53,14 +53,10 @@ export default component$(() => {
   });
 
   const randomDateMemo = $(async () => {
-    const data = memoList.value.map((v: Memo) => {
-      return {
-        ...v,
-        date: new Date(+new Date() - Math.floor(Math.random() * 1e12)),
-      };
-    });
-
-    memoList.value = data;
+    memoList.value = memoList.value.map((v) => ({
+      ...v,
+      date: new Date(Date.now() - Math.floor(Math.random() * 1e12)),
+    }));
   });
 
   // useTask$(({ track }) => {
