@@ -39,6 +39,8 @@
     "vite-tsconfig-paths": "4.2.0"
   },
   "dependencies": {
-    "@fontsource/noto-sans-thai-looped": "^5.0.3"
+    "@fontsource/noto-sans-thai-looped": "^5.0.3",
+    "@qwikest/icons": "^0.0.8",
+    "motion": "^10.16.2"
   }
 }

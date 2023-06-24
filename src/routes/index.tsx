@@ -1,15 +1,9 @@
-import {
-  component$,
-  useSignal,
-  $,
-  useTask$,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, useSignal, $, useTask$, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import Rootlayout from "~/core/layout/rootlayout";
 import Hero from "~/core/components/shared/hero";
-import type { Memo } from "~/core/context/MemoContext";
-
+import type { Memo } from "~/core/types/memoTypes";
+import Item from "~/core/components/Item";
 export default component$(() => {
   const memoList = useSignal<Memo[]>([]);
   const addMode = useSignal(false);
@@ -19,10 +13,12 @@ export default component$(() => {
   const trashMemo = useSignal<Memo[]>([]);
 
   const addMemo = $(() => {
+    console.log(new Date().getTime());
+    
     memoList.value = [
       ...memoList.value,
       {
-        id: memoList.value.length + 1,
+        id: new Date().getTime(),
         title: title.value,
         description: description.value,
         date: date.value || new Date(),
@@ -42,24 +38,31 @@ export default component$(() => {
         trashMemo.value = [...trashMemo.value, memo];
       }
     }
-    memoList.value = memoList.value.filter((memo, index) => {
+    memoList.value = memoList.value.filter((memo) => {
       return !trashMemo.value.some((trashMemo) => trashMemo.id === memo.id);
     });
   });
 
-  useTask$(({ track }) => {
-    track(memoList);
-    track(trashMemo)
+  const deleteMemo = $((memo: Memo) => {
+    memoList.value = memoList.value.filter((checkingMemo) => {
+      return checkingMemo.id !== memo.id;
+    });
+    localStorage.setItem("sht-memo", JSON.stringify(memoList.value));
   });
 
-  useVisibleTask$(async() => {
+  // useTask$(({ track }) => {
+  //   track(memoList);
+  //   track(trashMemo);
+  // });
+
+  useVisibleTask$(async () => {
     memoList.value = JSON.parse(localStorage.getItem("sht-memo") || "[]");
     await randomDeleteMemo();
-    console.log(trashMemo.value)
+    console.log(trashMemo.value);
 
     // Randomly add memo from trash
     trashMemo.value.forEach(async (memo, index) => {
-      console.log("random add memo from trash", index)
+      console.log("random add memo from trash", index);
       if (await random(100)) {
         console.log("add memo from trash");
         setTimeout(() => {
@@ -75,10 +78,7 @@ export default component$(() => {
       <Hero />
       <div>
         {!addMode.value ? (
-          <button
-            class="w-full rounded border shadow px-3 py-2 transition"
-            onClick$={() => (addMode.value = true)}
-          >
+          <button class="w-full rounded border shadow px-3 py-2 transition" onClick$={() => (addMode.value = true)}>
             จดสิ่งที่ต้องทำ 🫵
           </button>
         ) : (
@@ -112,10 +112,7 @@ export default component$(() => {
                 class="p-2 border-b w-full"
               />
               <div class="flex justify-end space-x-2">
-                <button
-                  class="py-2 px-4 hover:bg-gray-100 rounded transition"
-                  onClick$={() => (addMode.value = false)}
-                >
+                <button class="py-2 px-4 hover:bg-gray-100 rounded transition" onClick$={() => (addMode.value = false)}>
                   ปิด
                 </button>
                 <button
@@ -133,27 +130,12 @@ export default component$(() => {
         <p class="py-2 text-gray-500">รายการที่บันทึกไว้</p>
         {memoList.value && memoList.value.length != 0 ? (
           <div class="flex flex-col gap-2">
-            {memoList.value.map((memo, index) => {
-              return (
-                <div
-                  class="w-full shadow border rounded p-4 space-y-3"
-                  key={index}
-                >
-                  <div>
-                    <p class="font-medium text-xl">{memo.title}</p>
-                    <p class="line-clamp-15 break-words text-gray-600">
-                      {memo.description}
-                    </p>
-                  </div>
-                  <p class="text-gray-400 text-sm">
-                    วันที่ : {new Date(memo.date).toLocaleDateString()}
-                  </p>
-                </div>
-              );
+            {memoList.value.map((memo) => {
+              return <Item key={memo.id} memo={memo} deleteMemo={deleteMemo} />;
             })}
           </div>
         ) : (
-          <p>ยังไม่มีรายการ</p>
+          <p class="text-center py-12 bg-primary/5 rounded-md text-primary">ยังไม่มีรายการ</p>
         )}
       </div>
     </Rootlayout>
