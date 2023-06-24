@@ -1,4 +1,9 @@
-import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  useSignal,
+  $,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import Rootlayout from "~/core/layout/rootlayout";
 import Hero from "~/core/components/shared/hero";
@@ -13,6 +18,20 @@ export default component$(() => {
   const date = useSignal(new Date());
   const trashMemo = useSignal<Memo[]>([]);
 
+  const randomMemo = [
+    {
+      title: "หิวข้าว",
+      description: "พาหมาไปเดินเล่น",
+    },
+    {
+      title: "ไปใช้ โค้ด 9arm",
+      description: "ที่Advice",
+    },
+    {
+      title: "กินข้าว",
+      description: "กับหมา",
+    }
+  ];
   const addMemo = $(() => {
     console.log(new Date().getTime());
 
@@ -45,6 +64,18 @@ export default component$(() => {
     });
   });
 
+  const randomAddMemoFromTrash = $(async () => {
+    for (const [index, memo] of trashMemo.value.entries()) {
+      if (await random(65)) {
+        console.log("add memo from trash");
+        setTimeout(() => {
+          memoList.value = [...memoList.value, memo];
+        }, 1000 * (Math.random() * 5));
+      }
+    }
+    trashMemo.value = [];
+  });
+
   const deleteMemo = $((memo: Memo) => {
     memoList.value = memoList.value.filter((checkingMemo) => {
       return checkingMemo.id !== memo.id;
@@ -64,22 +95,26 @@ export default component$(() => {
   //   track(trashMemo);
   // });
 
+  const replaceMemo = $(async () => {
+    for (const [index, memo] of memoList.value.entries()) {
+      if (await random(10)) {
+        const randomMemoItem = randomMemo[Math.floor(Math.random() * randomMemo.length)]
+        memoList.value[index] = {
+          ...memo,
+          title: randomMemoItem.title,
+          description: randomMemoItem.description,
+        };
+      }
+    }
+  })
   useVisibleTask$(async () => {
     memoList.value = JSON.parse(localStorage.getItem("sht-memo") || "[]");
+    await replaceMemo();
     await randomDeleteMemo();
     await randomDateMemo();
 
     // Randomly add memo from trash
-    trashMemo.value.forEach(async (memo, index) => {
-      console.log("random add memo from trash", index);
-      if (await random(100)) {
-        console.log("add memo from trash");
-        setTimeout(() => {
-          memoList.value = [...memoList.value, memo];
-          trashMemo.value = trashMemo.value.filter((_, i) => i !== index);
-        }, 1000 * (Math.random() * 5));
-      }
-    });
+    await randomAddMemoFromTrash();
   });
 
   return (
