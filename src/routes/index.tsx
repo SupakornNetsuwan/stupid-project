@@ -6,6 +6,7 @@ import type { Memo } from "~/core/types/memoTypes";
 import Item from "~/core/components/Item";
 export default component$(() => {
   const memoList = useSignal<Memo[]>([]);
+  const isMouseOver = useSignal<boolean>(false);
   const addMode = useSignal(false);
   const title = useSignal("");
   const description = useSignal("");
@@ -14,15 +15,15 @@ export default component$(() => {
 
   const addMemo = $(() => {
     console.log(new Date().getTime());
-    
+
     memoList.value = [
-      ...memoList.value,
       {
         id: new Date().getTime(),
         title: title.value,
         description: description.value,
         date: date.value || new Date(),
       },
+      ...memoList.value,
     ];
 
     localStorage.setItem("sht-memo", JSON.stringify(memoList.value));
@@ -75,12 +76,22 @@ export default component$(() => {
 
   return (
     <Rootlayout>
-      <Hero />
+      <Hero isMouseOver={isMouseOver.value} />
       <div>
         {!addMode.value ? (
-          <button class="w-full rounded border shadow px-3 py-2 transition" onClick$={() => (addMode.value = true)}>
-            จดสิ่งที่ต้องทำ 🫵
-          </button>
+          <div class="relative group">
+            <button
+              onMouseOver$={() => (isMouseOver.value = true)}
+              onMouseLeave$={() => (isMouseOver.value = false)}
+              class="relative bg-white  z-10 w-full rounded border px-3 py-2 transition group-hover:shadow-realistic-1 "
+              onClick$={() => (addMode.value = true)}
+            >
+              จดสิ่งที่ต้องทำ 🫵
+            </button>
+            <div class="absolute inset-0  group-hover:translate-y-2 bg-primary z-[1] rounded transition-transform" />
+            <div class="absolute inset-0  group-hover:translate-y-3 bg-primary/50 z-[2] rounded transition-transform" />
+            <div class="absolute inset-0  group-hover:translate-y-4 bg-primary/20 z-[3] rounded transition-transform" />
+          </div>
         ) : (
           <div class="rounded border shadow px-3 py-2 flex justify-between transition">
             <div class="flex flex-col w-full gap-2">
@@ -112,7 +123,13 @@ export default component$(() => {
                 class="p-2 border-b w-full"
               />
               <div class="flex justify-end space-x-2">
-                <button class="py-2 px-4 hover:bg-gray-100 rounded transition" onClick$={() => (addMode.value = false)}>
+                <button
+                  class="py-2 px-4 hover:bg-gray-100 rounded transition"
+                  onClick$={() => {
+                    isMouseOver.value = false;
+                    addMode.value = false;
+                  }}
+                >
                   ปิด
                 </button>
                 <button
