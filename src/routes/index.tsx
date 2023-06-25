@@ -49,8 +49,8 @@ export default component$(() => {
       description: "ที่ Advice",
     },
     {
-      title: "กินข้าว",
-      description: "กับหมา",
+      title: "ไปเที่ยวเยอรมัน",
+      description: "เพราะไส้กรอกอร่อยต้องลองไปกิน",
     },
   ];
 
@@ -125,8 +125,8 @@ export default component$(() => {
 
     memoList.value = memoList.value.map((v) => ({
       ...v,
-      title: randomSlice(v.title),
-      description: randomSlice(v.description),
+      title: randomFromServer(20) ? randomSlice(v.title) : v.title,
+      description: randomFromServer(20) ? randomSlice(v.description) : v.description,
     }));
   });
 
@@ -137,7 +137,7 @@ export default component$(() => {
 
   const replaceMemo = $(async () => {
     for (const [index, memo] of memoList.value.entries()) {
-      if (await random(10)) {
+      if (await random(30)) {
         const randomMemoItem =
           randomMemo[Math.floor(Math.random() * randomMemo.length)];
         memoList.value[index] = {
@@ -161,7 +161,7 @@ export default component$(() => {
   return (
     <Rootlayout>
       <Hero isMouseOver={isMouseOver.value} />
-      {randomFromServer(70) && (
+      {randomFromServer(90) && (
         <div>
           {!addMode.value ? (
             <div class="relative group">
