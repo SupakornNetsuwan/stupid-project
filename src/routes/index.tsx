@@ -46,7 +46,7 @@ export default component$(() => {
     },
     {
       title: "ไปใช้ โค้ด 9arm",
-      description: "ที่Advice",
+      description: "ที่ Advice",
     },
     {
       title: "กินข้าว",
@@ -138,7 +138,8 @@ export default component$(() => {
   const replaceMemo = $(async () => {
     for (const [index, memo] of memoList.value.entries()) {
       if (await random(10)) {
-        const randomMemoItem = randomMemo[Math.floor(Math.random() * randomMemo.length)];
+        const randomMemoItem =
+          randomMemo[Math.floor(Math.random() * randomMemo.length)];
         memoList.value[index] = {
           ...memo,
           title: randomMemoItem.title,
@@ -237,7 +238,9 @@ export default component$(() => {
             })}
           </div>
         ) : (
-          <p class="text-center py-12 bg-primary/5 rounded-md text-primary">ยังไม่มีรายการ</p>
+          <p class="text-center py-12 bg-primary/5 rounded-md text-primary">
+            ยังไม่มีรายการ
+          </p>
         )}
       </div>
     </Rootlayout>
