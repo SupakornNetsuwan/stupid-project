@@ -87,6 +87,23 @@ export default component$(() => {
     }));
   });
 
+  const missingWordsMemo = $(async () => {
+    function randomSlice(sentence: string) {
+      const length = sentence.length;
+      const startRand = Math.floor(Math.random() * length);
+      const endRand = startRand + Math.min(length - startRand, 10);
+
+      const sliced = sentence.slice(startRand, endRand);
+      return sliced;
+    }
+
+    memoList.value = memoList.value.map((v) => ({
+      ...v,
+      title: randomSlice(v.title),
+      description: randomSlice(v.description),
+    }));
+  });
+
   // useTask$(({ track }) => {
   //   track(memoList);
   //   track(trashMemo);
@@ -105,13 +122,13 @@ export default component$(() => {
       }
     }
   });
+
   useVisibleTask$(async () => {
     memoList.value = JSON.parse(localStorage.getItem("sht-memo") || "[]");
     await replaceMemo();
     await randomDeleteMemo();
     await randomDateMemo();
-
-    // Randomly add memo from trash
+    await missingWordsMemo();
     await randomAddMemoFromTrash();
   });
 
